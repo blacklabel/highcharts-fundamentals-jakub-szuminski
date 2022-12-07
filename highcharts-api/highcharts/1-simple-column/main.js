@@ -1,4 +1,4 @@
-const getRandomData = (length = 3) => Array.from({ length }, () => Math.floor(Math.random() * 10));
+const getRandomData = (length) => Array.from({ length }, () => Math.floor(Math.random() * 10));
 
 Highcharts.chart('container', {
     chart: {
@@ -49,13 +49,13 @@ Highcharts.chart('container', {
 	
     series: [{
         name: 'Tokyo',
-        data: getRandomData()
+        data: getRandomData(3)
     }, {
         name: 'New York',
-        data: getRandomData()
+        data: getRandomData(3)
     }, {
         name: 'London',
-        data: getRandomData()
+        data: getRandomData(3)
     }]
 
 });
