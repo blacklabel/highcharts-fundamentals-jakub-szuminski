@@ -1,5 +1,4 @@
-const generateRandomNumber = () => Math.floor(Math.random() * 10);
-const generateRandomTriplet = () => Array.from({ length: 3 }, generateRandomNumber);
+const getRandomData = (length = 3) => Array.from({ length }, () => Math.floor(Math.random() * 10));
 
 Highcharts.chart('container', {
     chart: {
@@ -7,8 +6,8 @@ Highcharts.chart('container', {
 
         events: {
             load() {
-                const chart = this;
-                const maxY = chart.yAxis[0].dataMax;
+                const chart = this,
+                    maxY = chart.yAxis[0].dataMax;
 
                 chart.yAxis[0].update({
                     max: maxY * 2,
@@ -19,20 +18,6 @@ Highcharts.chart('container', {
                         width: 2
                     }]
                 });
-
-                chart.update({
-                    plotOptions: {
-                        series: {
-                            dataLabels: {
-                                enabled: true,
-                                formatter() {
-
-                                    return this.point.y === maxY ? 'max' : '';
-                                }
-                            }
-                        }
-                    }
-                })
             }
         }
     },
@@ -50,16 +35,27 @@ Highcharts.chart('container', {
     xAxis: {
         categories: ['Jan', ' Feb', 'Mar']
     },
-
+	
+    plotOptions: {
+        series: {
+            dataLabels: {
+                enabled: true,
+                formatter() {
+                    return this.point.y === this.point.series.yAxis.dataMax ? 'max' : '';
+                }
+            }
+        }
+    },
+	
     series: [{
         name: 'Tokyo',
-        data: generateRandomTriplet()
+        data: getRandomData()
     }, {
         name: 'New York',
-        data: generateRandomTriplet()
+        data: getRandomData()
     }, {
         name: 'London',
-        data: generateRandomTriplet()
+        data: getRandomData()
     }]
 
 });
