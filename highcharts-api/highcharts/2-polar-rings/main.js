@@ -25,15 +25,17 @@ const chart = Highcharts.chart('container', {
             },
 
             render() {
-                const chart = this;
+                const chart = this,
+                    radius = chart.yAxis[0].toPixels(2 * chart.yAxis[0].dataMax) * 2;
 
                 if(chart.circle) {
                     chart.circle.attr({
                         x: chart.chartWidth / 2,
-                        y: chart.plotHeight / 2 + chart.plotTop
+                        y: chart.plotHeight / 2 + chart.plotTop,
+                        radius
                     });
                 } else {
-                    chart.circle = chart.renderer.circle(chart.chartWidth / 2, chart.chartHeight / 2 - 20, chart.yAxis[0].toPixels(2 * chart.yAxis[0].dataMax, true) * 2).attr({
+                    chart.circle = chart.renderer.circle(chart.chartWidth / 2, chart.chartHeight / 2 - 20, radius).attr({
                         fill: 'transparent',
                         stroke: 'dodgerblue',
                         'stroke-width': 2
