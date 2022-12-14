@@ -33,7 +33,7 @@ const chart = Highcharts.chart('container', {
                         y: chart.plotHeight / 2 + chart.plotTop
                     });
                 } else {
-                    chart.circle = chart.renderer.circle(chart.chartWidth / 2, chart.chartHeight / 2 - 20, 148).attr({
+                    chart.circle = chart.renderer.circle(chart.chartWidth / 2, chart.chartHeight / 2 - 20, chart.plotHeight * 0.4).attr({
                         fill: 'transparent',
                         stroke: 'dodgerblue',
                         'stroke-width': 2
@@ -55,11 +55,6 @@ const chart = Highcharts.chart('container', {
 
     xAxis: {
         categories: ['Jan', ' Feb', 'Mar']
-    },
-	
-	pane: {
-        startAngle: 0,
-        endAngle: 360
     },
 	
     plotOptions: {
