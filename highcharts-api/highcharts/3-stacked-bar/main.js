@@ -5,7 +5,8 @@ Highcharts.chart('container', {
         
         events: {
         	load() {
-            	const chart = this;
+            	const chart = this,
+                    axisHeight = chart.xAxis[0].toPixels(1) - chart.xAxis[0].toPixels(0);
 
                 //Rendering additional texts
                 chart.renderer.text('Issue', 65, 35).add();
@@ -14,55 +15,30 @@ Highcharts.chart('container', {
                 chart.actionsText = chart.renderer.text('Actions', chart.plotWidth, 35).add();
                 
                 //Rendering 'How to fix buttons'
-                const axisHeight = chart.xAxis[0].toPixels(1) - chart.xAxis[0].toPixels(0);
-                
-                chart.buttons = Array.from({ length: chart.yAxis[0].series.length }, () => 0);
+                chart.buttons = [];
                 chart.yAxis[0].series.forEach((_, ind) => {
-                    chart.buttons[ind] = chart.renderer.button('How to fix', chart.plotWidth, chart.plotTop + axisHeight * (ind * 4 + 1) / 4,
-                        () => console.log('Button clicked!')).add();
+                    chart.buttons.push(chart.renderer.button('How to fix', chart.plotWidth, chart.plotTop + axisHeight * (ind * 4 + 1) / 4,
+                        () => console.log('Button clicked!'), { stroke: 'blue', 'stroke-width': 2 }).add());
                 });
 
                 //Creating space for buttons
                 chart.yAxis[0].update({
                 	max: chart.yAxis[0].dataMax * 1.75
                 });
-
-                //Calculating sums for each category in xAxis 
-                let sumTable = Array.from({ length: chart.yAxis[0].series.length }, () => 0);
-                chart.yAxis[0].series.forEach(serie => {
-                    serie.yData.forEach((value, index) => sumTable[index] += value);
-                });
-     
-                //Adding dataLabels based on sumTable
-     			chart.xAxis[0].series[0].data.forEach((serie, index) => serie.update({
-                	dataLabels: [{
-                    	inside: 'false',
-                        align: 'right',
-                        x: 50,
-                        format: `${Math.floor(sumTable[index] / 1000)} K`
-                    }]
-                }));
      		},
             
             render() {
-            	const chart = this;
+            	const chart = this,
+                    axisHeight = chart.xAxis[0].toPixels(1) - chart.xAxis[0].toPixels(0);
 
-                const axisHeight = chart.xAxis[0].toPixels(1) - chart.xAxis[0].toPixels(0);
-
-                if(chart.actionsText) {
-                    chart.actionsText.attr({
-                        x: chart.plotWidth
-                    });
-                }
-                
-                chart.yAxis[0].series.forEach((_, ind) => {
-                    if(chart.buttons[ind]) {
-                        chart.buttons[ind].attr({
-                            x: chart.plotWidth,
-                            y: chart.plotTop + axisHeight * (ind * 4 + 1) / 4
-                        });
-                    }
+                chart.actionsText.attr({
+                    x: chart.plotWidth
                 });
+                
+                chart.buttons.forEach((button, ind) => button.attr({ 
+                    x: chart.plotWidth,
+                    y: chart.plotTop + axisHeight * (ind * 4 + 1) / 4
+                }));
             }
         }
     },
@@ -94,24 +70,26 @@ Highcharts.chart('container', {
             	return this.value / 1000;
             }
         },
+
+        stackLabels: {
+            enabled: true,
+            formatter() {
+                return Math.floor(this.total / 1000) + ' K';
+            }
+        },
         
         gridLineWidth: 0,
     },
     
-    legend: {
-    	enabled: false,
-    },
     
     plotOptions: {
         series: {
             stacking: 'normal',
-            dataLabels: {
-                enabled: 'true',
-                formatter() {
-                    return typeof this === 'object' ? '' : this;
-                }
-            }
         },
+    },
+
+    legend: {
+        enabled: false
     },
 
     series: [{
