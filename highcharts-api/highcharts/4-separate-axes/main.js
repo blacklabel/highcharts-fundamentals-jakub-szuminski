@@ -2,29 +2,28 @@ const categories = ["Dep1", "Dep2", "Dep3", "Dep4", "Dep5"];
 
 Highcharts.chart("container", {
     chart: {
+        type: 'bar',
         marginTop: 50,
+        marginLeft: 20,
+        marginRight: 20,
 
         events: {
             load() {
-                this.xAxis[0].update({
-                    left: this.yAxis[0].left + this.yAxis[0].width + (this.yAxis[1].left - this.yAxis[0].width) / 2
-                });
+                const leftAxis = this.yAxis[0],
+                    rightAxis = this.yAxis[1];
 
-                this.yAxis[1].update({
+                leftAxis.update({
                     title: {
-                        text: "Manegrial Position",
                         y: -(this.plotHeight + 50)
-                    },
-                });
+                    }
+                }, false);
 
-                this.yAxis[0].update({
+                rightAxis.update({
                     title: {
-                        text: 'Non-managerial position',
-                        y: -(this.plotHeight + 50),
+                        y: -(this.plotHeight + 50)
                     }
                 });
             },
-            
         }
     },
     
@@ -32,18 +31,27 @@ Highcharts.chart("container", {
         text: "",
     },
 
+    plotOptions: {
+        series: {
+            stacking: 'normal',
+        }
+    },
+
     xAxis: {
         categories: categories,
+        
         title: {
             text: "",
         },
-        lineWidth: 0,
-    },
 
-    plotOptions: {
-        series: {
-            stacking: "normal",
+        lineWidth: 0,
+        
+        labels: {
+            align: 'left',
         },
+
+        left: '50%',
+        width: '20%',  
     },
 
     legend: {
@@ -52,73 +60,70 @@ Highcharts.chart("container", {
 
     yAxis: [
         {
-            max: 1,
-            width: 320,
+            max: 100,
+            width: '40%',
             
-            labels: {
-                formatter() {
-                    return this.value * 100;
-                },
+            reversed: true,
+
+            title: {
+                text: 'Non managerial position',
             },
 
-            reversed: true,
+            backgroundColor: 'gray',
         },
         {
-            max: 1,
-            width: 320,
+            max: 100,
+            width: '40%',
             
-            labels: {
-                formatter() {
-                    return this.value * 100;
-                },
-            },
-
             offset: 0,
-            left: 500,
+            left: '60%',
+
+            title: {
+                text: 'Managerial position',
+            }
         },
     ],
 
     series: [
         {
-            type: "bar",
-            data: [0.5, 0.36, 0.5, 0.4, 0.14],
-            color: "gray",
+            data: [50, 36, 50, 40, 14],
+            color: 'gray',
             yAxis: 0,
+            enableMouseTracking: false,
         },
         {
-            type: "bar",
-            data: [0.5, 0.64, 0.5, 0.6, 0.86],
+            data: [50, 64, 50, 60, 86],
 
             color: "red",
             yAxis: 0,
 
             dataLabels: {
                 enabled: true,
+                inside: 'true',
                 align: "right",
                 
-                formatter() {
-                    return Math.floor(this.y * 100) + "%";
-                },
+                format: '{y}%',
             },
         },
+
         {
-            type: "bar",
-            data: [0.32, 0.43, 0.55, 0.78, 0.12],
+            data: [32, 43, 55, 78, 12],
+            color: 'gray',
             yAxis: 1,
-            color: "gray",
+            enableMouseTracking: false
         },
         {
-            type: "bar",
-            data: [0.68, 0.57, 0.45, 0.22, 0.88],
+            data: [68, 57, 45, 22, 88],
             
-            yAxis: 1,
             color: "red",
+            yAxis: 1,
+
             dataLabels: {
                 enabled: true,
+                inside: 'true',
                 align: "left",
-                formatter() {
-                    return Math.floor(this.y * 100) + "%";
-                },
+                
+                format: '{y}%',
             },
         },
     ],
