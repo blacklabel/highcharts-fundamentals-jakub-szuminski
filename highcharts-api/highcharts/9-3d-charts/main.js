@@ -23,18 +23,22 @@ Highcharts.chart('container', {
         events: {
             load() {
                 const chart = this;
-                console.log(this);
+                
+                const timeInterval = 0.001,
+                    angularFrequency = 10;
 
-                const timeInterval = 0.001;
-
-                const angularFrequency = 10;
-                const calculateX = () => 5 + Math.sin(angularFrequency * time);
-                const calculateZ = () => 5 + Math.cos(angularFrequency * time);
+                const calculatePosition = (start, multiplier, func = Math.sin) => start + multiplier * func(angularFrequency * time);
 
                 setInterval(() => {
-                    chart.series[1].update({
-                        data: [[calculateX(), 5, calculateZ()]]
+                    chart.series[0].data[1].update({
+                        x: calculatePosition(5, 2),
+                        z: calculatePosition(5, 2, Math.cos)
                     });
+
+                    chart.series[0].data[2].update({
+                        x: calculatePosition(5, 1),
+                        z: calculatePosition(5, 1, Math.cos),
+                    })
 
                     time += timeInterval;
                 }, timeInterval);
@@ -78,19 +82,37 @@ Highcharts.chart('container', {
     },
 
     series: [{
-        name: 'Sun',
-        data: [[5, 5, 5]],
-        marker: {
-            fillColor: 'yellow',
-            radius: 10,
-        }
-    }, {
-        name: 'Earth',
-        data: [[4.5, 5, 5]],
-        marker: {
-            fillColor: 'red',
-            radius: 5,
-            symbol: 'circle'
-        }
+        name: 'Solar System',
+        data: [
+            {
+                x: 5,
+                y: 5,
+                z: 5,
+                marker: {
+                    fillColor: 'yellow',
+                    radius: 10,
+                }
+            }, 
+            {
+                x: 4.5, 
+                y: 5,
+                z: 5,
+                marker: {
+                    fillColor: 'blue',
+                    radius: 5,
+                    symbol: 'circle',
+                }
+            },
+            {
+                x: 4.5,
+                y: 5,
+                z: 6,
+                marker: {
+                    fillColor: 'yellow',
+                    radius: 2,
+                    symbol: 'circle',
+                }
+            }
+        ],
     }]
 })
