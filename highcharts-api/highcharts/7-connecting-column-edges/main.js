@@ -10,32 +10,33 @@ Highcharts.chart('container', {
 
                 let zIndex = 3;
                 
-                chart.series.foreach(data => {
+                chart.series.forEach(series => {
+                    console.log(series);
                     let prevCorner = null;
                     let lineIndex = 0;
                     zIndex++;
 
-                    if(!data.lines) data.lines = [];
+                    if(!series.lines) series.lines = [];
 
-                    data.forEach(point => {
+                    series.points.forEach(point => {
                         const x = chart.plotLeft + point.shapeArgs.x,
                             y = chart.plotTop + point.shapeArgs.y + 1;
 
                         if(prevCorner && prevCorner.length) {
-                            if(!data.lines[lineIndex]) {
-                                data.lines.push(
+                            if(!series.lines[lineIndex]) {
+                                series.lines.push(
                                     chart.renderer.path([])
-                                    .attr({ stroke: data.color, zIndex })
+                                    .attr({ stroke: series.color, zIndex })
                                     .add()
                                 );
                             }
                             
-                            data.lines[lineIndex].attr({
+                            series.lines[lineIndex].attr({
                                 d: ['M', prevCorner[0], prevCorner[1], 'L', x, y, 'z'],
                                 'stroke-width': 1
                             });
 
-                            if(!data.visible) data.lines[lineIndex].attr({ 'stroke-width': 0 });
+                            if(!series.visible) series.lines[lineIndex].attr({ 'stroke-width': 0 });
 
                             lineIndex++;
                         } 
