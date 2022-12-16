@@ -24,26 +24,23 @@ Highcharts.chart('container', {
             load() {
                 const chart = this;
                 
-                const timeInterval = 0.001,
-                    angularFrequency = 10;
+                const timeInterval = 0.001;
 
-                const calculatePosition = (start, multiplier, func = Math.sin) => start + multiplier * func(angularFrequency * time);
+                const calculatePosition = (start, multiplier, func = Math.sin, angularFrequency = 10) => start + multiplier * func(angularFrequency * time);
 
                 setInterval(() => {
                     chart.series[0].data[1].update({
-                        x: calculatePosition(5, 2),
-                        z: calculatePosition(5, 2, Math.cos)
+                        x: calculatePosition(5, 2.5),
+                        z: calculatePosition(5, 2.5, Math.cos)
                     });
 
                     chart.series[0].data[2].update({
-                        x: calculatePosition(5, 1),
-                        z: calculatePosition(5, 1, Math.cos),
+                        x: calculatePosition(chart.series[0].data[1].x, 0.5, Math.sin, 25),
+                        z: calculatePosition(chart.series[0].data[1].z, 0.5, Math.cos, 25),
                     })
 
                     time += timeInterval;
                 }, timeInterval);
-
-
             }
         }
     },
@@ -83,23 +80,24 @@ Highcharts.chart('container', {
 
     series: [{
         name: 'Solar System',
+        
         data: [
             {
                 x: 5,
                 y: 5,
                 z: 5,
                 marker: {
-                    fillColor: 'yellow',
-                    radius: 10,
-                }
+                    fillColor: '#ffcc00',
+                    radius: 15,
+                },
             }, 
             {
                 x: 4.5, 
                 y: 5,
                 z: 5,
                 marker: {
-                    fillColor: 'blue',
-                    radius: 5,
+                    fillColor: '#0066ff',
+                    radius: 7,
                     symbol: 'circle',
                 }
             },
@@ -108,8 +106,8 @@ Highcharts.chart('container', {
                 y: 5,
                 z: 6,
                 marker: {
-                    fillColor: 'yellow',
-                    radius: 2,
+                    fillColor: '#ffff00',
+                    radius: 4,
                     symbol: 'circle',
                 }
             }
