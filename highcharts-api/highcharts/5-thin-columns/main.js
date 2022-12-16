@@ -26,11 +26,7 @@ Highcharts.chart('container', {
 
     plotOptions: {
         column: {
-            borderRadius: 0,
             borderWidth: 0,
-        },
-
-        series: {
             color: 'red',
             pointPadding: 0,
         },
