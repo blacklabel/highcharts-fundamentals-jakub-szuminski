@@ -7,39 +7,42 @@ Highcharts.chart('container', {
         events: {
             render() {
                 const chart = this;
-                console.log(this);
 
                 let zIndex = 3;
                 
-                for(data of chart.series) {
+                chart.series.foreach(data => {
                     let prevCorner = null;
                     let lineIndex = 0;
                     zIndex++;
 
                     if(!data.lines) data.lines = [];
 
-                    for(point of data.points) {
+                    data.forEach(point => {
                         const x = chart.plotLeft + point.shapeArgs.x,
                             y = chart.plotTop + point.shapeArgs.y + 1;
 
-                        if(prevCorner?.length) {
-                            if(data.lines[lineIndex]) {
-                                data.lines[lineIndex].attr({
-                                    d: ['M', prevCorner[0], prevCorner[1], 'L', x, y, 'z'],
-                                    'stroke-width': 1,
-                                });
-                                
-                                if(!data.visible) data.lines[lineIndex].attr({ 'stroke-width' : 0 });
-                            } else {
-                                data.lines.push(chart.renderer.path(['M', prevCorner[0], prevCorner[1], 'L', x, y, 'z']).attr({ stroke: data.color, zIndex }).add());
+                        if(prevCorner && prevCorner.length) {
+                            if(!data.lines[lineIndex]) {
+                                data.lines.push(
+                                    chart.renderer.path([])
+                                    .attr({ stroke: data.color, zIndex })
+                                    .add()
+                                );
                             }
+                            
+                            data.lines[lineIndex].attr({
+                                d: ['M', prevCorner[0], prevCorner[1], 'L', x, y, 'z'],
+                                'stroke-width': 1
+                            });
+
+                            if(!data.visible) data.lines[lineIndex].attr({ 'stroke-width': 0 });
 
                             lineIndex++;
                         } 
                         
-                        prevCorner = [x + point.shapeArgs.width, y];
-                    }
-                }
+                        prevCorner = [x + point.shapeArgs.width, y]; 
+                    });
+                });
             },
         }
     },
