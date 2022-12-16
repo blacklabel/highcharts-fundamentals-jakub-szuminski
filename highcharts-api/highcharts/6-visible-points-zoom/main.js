@@ -1,45 +1,71 @@
-const generateData = (length) => Array.from({ length }, () => Math.random() * 100);
+const generateData = (length) => Array.from({ length }, () => Math.floor(Math.random() * 100));
 
 Highcharts.chart('container', {
     chart: {
         zoomType: 'xy',
-
         events: {
             load() {
                 const chart = this,
-                    maxY = chart.yAxis[0].dataMax;
+                    yAxis = chart.yAxis[0],
+                    maxY = yAxis.dataMax;
                 
-                console.log(chart.yAxis[0]);
-
-                for(let point of chart.yAxis[0].series[0].data) {
+                chart.maxCircles = [];
+                
+                for(let point of yAxis.series[0].data) {
                     if(point.y !== maxY) continue;
 
-                    chart.renderer.circle(chart.xAxis[0].toPixels(point.x), chart.yAxis[0].toPixels(0), 5)
-                    .attr({ zIndex: 5, })
-                    .css({ color: 'red' })
-                    .add();
+                    chart.maxCircles.push(
+                        [chart.renderer.circle(chart.xAxis[0].toPixels(point.x), yAxis.toPixels(0), 5)
+                        .attr({ zIndex: 5, })
+                        .css({ color: 'red' })
+                        .add(),
+                        point.x]
+                    );
                 }
 
-                chart.visibleCount = chart.renderer.text(`Visible count: ${chart.yAxis[0].series[0].data.length}`, chart.plotLeft, chart.plotTop + chart.plotHeight + 50).add();
+                chart.visibleCount = chart.renderer.text(
+                    `Visible count: ${yAxis.series[0].data.length}`, 
+                    chart.plotLeft, 
+                    chart.plotTop + chart.plotHeight + 50
+                ).add();
+
+                chart.update({
+                    plotOptions: {
+                        series: {
+                            dataLabels: {
+                                formatter() {
+                                    return this.point.y === maxY ? this.point.y : '';
+                                }
+                            }
+                        }
+                    }
+                });
             }, 
             redraw() {
-                const chart = this;
-                console.log(this);
-
-                let visibleCount = 0;
-
-                const yMin = chart.yAxis[0].min,
-                    yMax = chart.yAxis[0].max,
+                const chart = this,
+                    yAxis = chart.yAxis[0];
+                
+                const yMin = yAxis.min,
+                    yMax = yAxis.max,
                     xMin = chart.xAxis[0].min,
                     xMax = chart.xAxis[0].max;
-
-                const checkPoint = (point) => (yMin <= point.y && point.y <= yMax && xMin <= point.x && point.x <= xMax);
                 
-                for(let point of chart.yAxis[0].series[0].data) {
+                let visibleCount = 0;
+
+                const checkPoint = (point) => (
+                    (yMin <= point.y && point.y <= yMax) && (xMin <= point.x && point.x <= xMax)
+                );
+                
+                for(let point of yAxis.series[0].data) {
                     if(checkPoint(point)) visibleCount++;
                 }
 
-                console.log('Visible count: ', visibleCount);
+                for(let circle of chart.maxCircles) {
+                    circle[0].attr({
+                        x: chart.xAxis[0].toPixels(circle[1])
+                    });
+                }
+
                 if(chart.visibleCount) {
                     chart.visibleCount.attr({
                         text: `Visible count: ${visibleCount}`,
@@ -47,35 +73,29 @@ Highcharts.chart('container', {
                         y: chart.plotTop + chart.plotHeight + 50,
                     })
                 } else {
-                    chart.visibleCount = chart.renderer.text(`Visible count: ${visibleCount}`, chart.plotLeft, chart.plotTop + chart.plotHeight + 50).add();
+                    chart.visibleCount = chart.renderer.text(
+                        `Visible count: ${visibleCount}`, 
+                        chart.plotLeft, 
+                        chart.plotTop + chart.plotHeight + 50
+                    ).add();
                 }
             }
         }
-    },
-
-    title: {
-        text: 'Chart title',
     },
 
     plotOptions: {
         series: {
             dataLabels: {
                 enabled: true,
-
                 style: {
                     color: 'red',
-                    textOutline: undefined,
+                    textOutline: 'white',
                 },
-
-                formatter() {
-                    return this.point.y === this.point.series.yAxis.dataMax ? Math.floor(this.point.y) : '';
-                }
             }
         }
     },
 
     series: [{
-        name: 'Series 1',
-        data: generateData(100),
+        data: generateData(100)
     }]
 });
