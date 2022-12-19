@@ -30,7 +30,7 @@ Highcharts.chart("container", {
     },
     plotOptions: {
         bar: {
-            stacking: 'overlap'
+            stacking: 'normal'
         }
     },
     xAxis: {
