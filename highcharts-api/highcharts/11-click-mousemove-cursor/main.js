@@ -8,8 +8,9 @@ const createCircle = (x = 0, y = 0) => {
 }
 
 container.addEventListener('mousemove', (e) => {
-    if(!chart.cursorPointer) 
+    if(!chart.cursorPointer) {
         chart.cursorPointer = createCircle();
+    }
 
     chart.cursorPointer.attr({
         x: e.x,
@@ -18,8 +19,7 @@ container.addEventListener('mousemove', (e) => {
 });
 
 container.addEventListener('click', (e) => {
-    if(chart.cursorPointer) 
-        chart.cursorPointer = createCircle(e.x, e.y);
+    createCircle(e.x, e.y);
 });
 
 const chart = Highcharts.chart('container', {
