@@ -5,6 +5,8 @@ Highcharts.chart('container', {
         zoomType: 'xy',
         events: {
             render() {
+                console.log('render event triggered');
+
                 const chart = this,
                     yAxis = chart.yAxis[0],
                     maxY = yAxis.dataMax,
@@ -12,25 +14,29 @@ Highcharts.chart('container', {
                     yMax = yAxis.max,
                     xMin = chart.xAxis[0].min,
                     xMax = chart.xAxis[0].max;
-                    
                 
+                let maxVisibleValue = -Infinity,
+                    visibleCount = 0;
+                
+                for(let point of yAxis.series[0].data) {
+                    if(yMin <= point.y && point.y <= yMax && xMin <= point.x && point.x <= xMax) {
+                        visibleCount++;
+                        maxVisibleValue = Math.max(maxVisibleValue, point.y);
+                    }
+                }
+                chart.maxVisibleValue = maxVisibleValue;
+
                 if(chart.maxCircles) chart.maxCircles.forEach(circle => circle.destroy());
                 chart.maxCircles = [];
 
                 for(let point of yAxis.series[0].data) {
-                    if(point.y !== maxY) continue;
+                    if(point.y !== maxVisibleValue) continue;
 
                     const circle = chart.renderer.circle(chart.xAxis[0].toPixels(point.x), chart.plotTop + chart.plotHeight, 5)
                         .attr({ zIndex: 5, })
                         .css({ color: 'red' })
                         .add();
                     chart.maxCircles.push(circle);
-                }
-
-                let visibleCount = 0;
-                for(let point of yAxis.series[0].data) {
-                    if(yMin <= point.y && point.y <= yMax && xMin <= point.x && point.x <= xMax)
-                        visibleCount++;
                 }
 
                 if(!chart.visibilityInfoText) chart.visibilityInfoText = chart.renderer.text().add();
@@ -42,7 +48,6 @@ Highcharts.chart('container', {
             }
         }
     },
-
     plotOptions: {
         series: {
             dataLabels: {
@@ -52,12 +57,11 @@ Highcharts.chart('container', {
                     textOutline: 'white',
                 },
                 formatter() {
-                    return this.point.y === this.point.series.dataMax ? this.point.y : '';
+                    return this.point.y === this.series.chart.maxVisibleValue ? this.point.y : '';
                 }
-            }
+            },
         }
     },
-
     series: [{
         data: generateData(100)
     }]
