@@ -5,38 +5,50 @@ Highcharts.chart('container', {
         zoomType: 'xy',
         events: {
             render() {
-                console.log('render event triggered');
-
                 const chart = this,
                     yAxis = chart.yAxis[0],
-                    maxY = yAxis.dataMax,
                     yMin = yAxis.min,
                     yMax = yAxis.max,
                     xMin = chart.xAxis[0].min,
                     xMax = chart.xAxis[0].max;
                 
-                let maxVisibleValue = -Infinity,
+                let maxVisibleValue = 0,
+                    maxPoints = [],
                     visibleCount = 0;
                 
-                for(let point of yAxis.series[0].data) {
-                    if(yMin <= point.y && point.y <= yMax && xMin <= point.x && point.x <= xMax) {
-                        visibleCount++;
-                        maxVisibleValue = Math.max(maxVisibleValue, point.y);
-                    }
-                }
-                chart.maxVisibleValue = maxVisibleValue;
-
                 if(chart.maxCircles) chart.maxCircles.forEach(circle => circle.destroy());
                 chart.maxCircles = [];
 
-                for(let point of yAxis.series[0].data) {
-                    if(point.y !== maxVisibleValue) continue;
+                if(chart.maxLabels) chart.maxLabels.forEach(label => label.destroy());
+                chart.maxLabels = [];
 
+                for(let point of yAxis.series[0].data) {
+                    if(yMin <= point.y && point.y <= yMax && xMin <= point.x && point.x <= xMax) {
+                        visibleCount++;
+
+                        if(point.y > maxVisibleValue) {
+                            maxPoints = [];
+                            maxVisibleValue = point.y;
+                        } 
+                        
+                        if(point.y === maxVisibleValue) {
+                            maxPoints.push(point);
+                        } 
+                    }
+                }
+
+                for(let point of maxPoints) {
                     const circle = chart.renderer.circle(chart.xAxis[0].toPixels(point.x), chart.plotTop + chart.plotHeight, 5)
                         .attr({ zIndex: 5, })
                         .css({ color: 'red' })
                         .add();
                     chart.maxCircles.push(circle);
+
+                    const label = chart.renderer.text(point.y, chart.xAxis[0].toPixels(point.x), chart.yAxis[0].toPixels(point.y) - 10)
+                        .attr({ zIndex: 5 })
+                        .css({ color: 'red' })
+                        .add();
+                    chart.maxLabels.push(label);
                 }
 
                 if(!chart.visibilityInfoText) chart.visibilityInfoText = chart.renderer.text().add();
@@ -46,20 +58,6 @@ Highcharts.chart('container', {
                     y: chart.plotTop + chart.plotHeight + 50
                 });
             }
-        }
-    },
-    plotOptions: {
-        series: {
-            dataLabels: {
-                enabled: true,
-                style: {
-                    color: 'red',
-                    textOutline: 'white',
-                },
-                formatter() {
-                    return this.point.y === this.series.chart.maxVisibleValue ? this.point.y : '';
-                }
-            },
         }
     },
     series: [{
