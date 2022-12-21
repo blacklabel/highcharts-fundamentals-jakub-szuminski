@@ -30,6 +30,16 @@ Highcharts.chart('container', {
         minTickInterval: 5      
     }],
 
+    plotOptions: {
+        series: {
+            states: {
+                inactive: {
+                    enabled: false
+                }
+            },
+        }
+    },
+
     series: [{
         type: 'scatter',
         data: [3, 4, 5, 3, 2, 3, 2, 3, 4, 5, 3, 6, 3, 2, 4, 5, 5, 6, 6, 1, 6, 6, 2, 1, 3, 5, 6],
@@ -37,22 +47,12 @@ Highcharts.chart('container', {
         zIndex: 1,
         color: '#434348',
         allowPointSelect: true,
-        states: {
-            inactive: {
-                enabled: false
-            }
-        }
     }, {
         type: 'histogram',
         baseSeries: 0,
         yAxis: 1,
         zIndex: -1,
         color: '#7cb4eb',
-        states: {
-            inactive: {
-                enabled: false
-            }
-        },
         events: {
             click(e) {
                 const chart = this.chart;
