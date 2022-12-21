@@ -3,14 +3,17 @@ Highcharts.chart('container', {
         events: {
             load() {
                 const chart = this,
-                    valueOccurences = {};
+                    occurence = {};
 
                 chart.series[0].points.forEach(point => {
-                    if(valueOccurences[point.y]) valueOccurences[point.y]++;
-                    else valueOccurences[point.y] = 1;
+                    if(occurence[point.y]) {
+                        occurence[point.y]++;
+                    } else {
+                        occurence[point.y] = 1;
+                    }
                 });
 
-                chart.valueOccurences = valueOccurences;
+                chart.occurence = occurence;
             }
         }
     },
@@ -30,7 +33,6 @@ Highcharts.chart('container', {
     series: [{
         type: 'scatter',
         data: [3, 4, 5, 3, 2, 3, 2, 3, 4, 5, 3, 6, 3, 2, 4, 5, 5, 6, 6, 1, 6, 6, 2, 1, 3, 5, 6],
-        yAxis: 0,
         xAxis: 1,
         zIndex: 1,
         color: '#434348',
@@ -44,7 +46,6 @@ Highcharts.chart('container', {
         type: 'histogram',
         baseSeries: 0,
         yAxis: 1,
-        xAxis: 0,
         zIndex: -1,
         color: '#7cb4eb',
         states: {
@@ -55,10 +56,9 @@ Highcharts.chart('container', {
         events: {
             click(e) {
                 const chart = this.chart;
-
                 chart.series[0].data.forEach(dataPoint => {
                     dataPoint.update({
-                        selected: chart.valueOccurences[dataPoint.y] === e.point.y
+                        selected: chart.occurence[dataPoint.y] === e.point.y
                     })
                 });
             }
