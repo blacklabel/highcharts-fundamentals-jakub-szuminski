@@ -21,14 +21,21 @@ Highcharts.chart('container', {
             point: {
                 events: {
                     mouseOver(e) {
-                        const chart = this.series.chart;
+                        const chart = this.series.chart,
+                            otherSeries = chart.series[e.target.series.index === 0 ? 1 : 0], //another pie series
+                            otherPoint = otherSeries.points[e.target.x]; //corresponding point in another pie 
 
-                        chart.series[e.target.series.index === 0 ? 1 : 0].points[e.target.x].setState('hover');
+                        otherSeries.points[e.target.x].setState('hover');
                         
                         if(!chart.secondTooltip) chart.secondTooltip = new Highcharts.Tooltip(chart, chart.tooltip.options);
-                        chart.secondTooltip.refresh(chart.series[1].points[e.target.x]);
+                        chart.secondTooltip.refresh(otherPoint);
                     },
-
+                    mouseOut(e) {
+                        const chart = this.series.chart;
+                        if(chart.secondTooltip) {
+                            chart.secondTooltip.destroy();
+                        }
+                    },
                     legendItemClick(e) {
                         this.series.chart.series[1].points[e.target.x].update({
                             visible: !e.target.visible
