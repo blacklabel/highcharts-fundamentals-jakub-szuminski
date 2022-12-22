@@ -10,16 +10,35 @@ function hslToHex(h, s, l) {
     return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-function createHeatmapData(parameter, value) {
+function createHeatmapData(choice) {
     const arr = [];
-    const val = value ? (value / 100) : 0.5;
 
-    for(let x = 0; x <= 360; x += 10) {
-        for(let y = 0; y <= 1; y += 0.025) {
-            arr.push({ 
-                x, y, 
-                color: parameter === 'Saturation' ? hslToHex(x, val, 0.5) : hslToHex(x, y, val)
-            });
+    if(choice === 'Saturation') {
+        for(let x = 0; x <= 360; x += 10) {
+            for(let y = 0; y <= 1; y += 0.025) {
+                arr.push({ 
+                    x, y, 
+                    color: hslToHex(x, saturation, y)
+                });
+            }
+        }
+    } else if (choice === 'Value') {
+        for(let x = 0; x <= 360; x += 10) {
+            for(let y = 0; y <= 1; y += 0.025) {
+                arr.push({ 
+                    x, y, 
+                    color: hslToHex(x, y, value)
+                });
+            }
+        }
+    } else {
+        for(let x = 0; x <= 360; x += 10) {
+            for(let y = 0; y <= 1; y += 0.025) {
+                arr.push({ 
+                    x, y, 
+                    color: hslToHex(x, y, 0.5)
+                });
+            }
         }
     }
 
@@ -84,15 +103,23 @@ const form = document.getElementById('form'),
     slider = document.getElementById('slider');
 
 form.addEventListener('change', () => {
-    console.log('form changed');
-
     const choice = document.querySelector('input[name="property_choice"]:checked')?.value;
     if(!choice) return;
 
-    console.log(`${choice} : ${slider.value}`);
+    if(choice === 'Saturation') {
+        saturation = slider.value / 100;
+    } else if (choice === 'Value') {
+        value = slider.value / 100;
+    }
+
+    chart.yAxis[0].update({
+        title: {
+            text: choice === 'Value' ? 'S' : 'V'
+        }
+    });
 
     chart.series[0].update({
-        data: createHeatmapData(choice, slider.value)
+        data: createHeatmapData(choice)
     });
 })
 
