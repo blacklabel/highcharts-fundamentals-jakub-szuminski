@@ -46,16 +46,13 @@ const chart = Highcharts.chart('container', {
         point: {
             events: {
                 click(e) {
-                    const chart = this.series.chart;
-
-                    //node which was clicked
-                    const node = chart.series[0].nodes.find(node => node.id === e.point.id);
+                    const node = this;
 
                     //changing its state (from open => closed or from closed => open)
                     node.isOpen = node.hasOwnProperty('isOpen') ? !node.isOpen : false;
 
                     //starting the recursive algorithm that changes visibility
-                    changeVisibility(node, node.isOpen, first = true);
+                    changeVisibility(node, node.isOpen, true);
                 }
             }
         },
