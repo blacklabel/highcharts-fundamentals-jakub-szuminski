@@ -1,40 +1,28 @@
 const changeVisibility = (node, visible, first = false) => {
-    if(first) {
-        console.log('First Node (', visible, ')');
-        
-    } else {
-        console.log('changing visibility to ', visible);
+    const display = visible ? 'block' : 'none';
+    
+    //if it's not the node we clicked, but a child, make them appear/disappear
+    if(!first) {
+        node.graphic.css({ display });
+        node.dataLabel.css({ display });   
+    } 
 
-        node.update({ visible });
+    //if the node isOpen === false (node's children are already invisible)
+    if(!first && node.hasOwnProperty('isOpen') && !node.isOpen) return;
 
-        //hide the node 
+    node.isOpen = visible;
 
-        // chart.series[0].points.find(point => point.from === node.id).update({
-        //     visible
-        // });
-        //node.update({ visible });
-    }
-    
-    /*
-    const points = chart.series[0].points.filter(point => point.from === node.id);
-    const nodes = node.linksFrom.map(link => link.toNode);
-    
-    if(points) {
-        console.log('Points: ', points);
-        //points.forEach(point => point.update({ visible }));
-    } */
-    
-    if(!node.linksFrom) return;
-    
+    //iterating through node's children, hiding the connection & changing the visibility of the child
     node.linksFrom.forEach(link => {
-        changeVisibility(link.toNode, visible);
-    })
+        link.graphic.css({ display });
+        changeVisibility(link.toNode, node.isOpen);
+    });
 }
 
 const chart = Highcharts.chart('container', {
     chart: {
         type: 'networkgraph',
-        height: 450
+        height: 450,
     },
     title: {
         text: '',
@@ -43,7 +31,6 @@ const chart = Highcharts.chart('container', {
         networkgraph: {
             keys: ['from', 'to'],
             layoutAlgorithm: {
-                //enableSimulation: false,
                 friction: -0.9
             }
         }
@@ -53,50 +40,28 @@ const chart = Highcharts.chart('container', {
             enabled: true,
             linkFormat: ''
         },
-        nodes: [{
-            id: 'Mueed',
-            color: 'red',
-            mass: 50,
-        }],
         marker: {
             radius: 20,
         },
         point: {
             events: {
                 click(e) {
-                    //console.log('Clicked Event - context: ', this);
-                    //console.log('Clicked Event - event: ', e);
-
-                    //e.point.id - "Mueed"
-
                     const chart = this.series.chart;
-                    console.log('Chart: ', chart);
 
-                    
                     //node which was clicked
                     const node = chart.series[0].nodes.find(node => node.id === e.point.id);
-                    const isOpen = node.hasOwnProperty('isOpen') ? !node.isOpen : true;
 
-                    node.update({ isOpen });
+                    //changing its state (from open => closed or from closed => open)
+                    node.isOpen = node.hasOwnProperty('isOpen') ? !node.isOpen : false;
 
-                    const point = chart.series[0].points[0];
-                    
-                    console.log(point);
-                    point.graphic.attr({
-                        'stroke-width': 0,
-                    });
-
-                    const linksFrom = this.linksFrom;
-                    //console.log('Links from: ', linksFrom);
-
-                    //console.log(chart.series[0].nodes);
-
-                    //changeVisibility(node, isOpen, true);
+                    //starting the recursive algorithm that changes visibility
+                    changeVisibility(node, node.isOpen, first = true);
                 }
             }
         },
         data: [
-            {from: 'Mueed', to: 'Sister', visible : false },
+            //Mueed
+            ['Mueed', 'Sister'],
             ['Mueed', 'Spouse'],
             ['Mueed', 'Brother'],
             ['Mueed', 'Son'],
