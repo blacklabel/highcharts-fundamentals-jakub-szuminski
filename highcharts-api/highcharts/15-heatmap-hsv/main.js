@@ -8,11 +8,10 @@ function hslToHex(h, s, l) {
     return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-function createHeatmapData(choice = 'none', sliderValue) {
+function createHeatmapData(choice = 'value', sliderValue = 0.5) {
     const arr = [];
 
     const createColor = {
-        'none': (x, y) => hslToHex(x, y, 0.5),
         'saturation': (x, y) => hslToHex(x, sliderValue, y),
         'value': (x, y) => hslToHex(x, y, sliderValue)
     }
@@ -78,7 +77,7 @@ form.addEventListener('change', () => {
         title: {
             text: choice === 'value' ? 'S' : 'V'
         }
-    });
+    }, false);
 
     chart.series[0].update({
         data: createHeatmapData(choice, slider.value / 100)
