@@ -1,9 +1,24 @@
-function hslToHex(h, s, l) {
-    const a = s * Math.min(l, 1 - l);
+/*
+This function takes three parameters (of an HSL color): 
+- hue (0 to 360 degrees), 
+- saturation (0 to 1), 
+- value (0 to 1)
+and returns a corresponding HEX color.
+
+The function was taken from this source:
+https://stackoverflow.com/questions/36721830/convert-hsl-to-rgb-and-hex
+
+The calculations are based on this repo:
+https://gist.github.com/mjackson/5311256
+*/
+
+function convertHSLtoHEX(hue, saturation, value) {
+    const a = saturation * Math.min(value, 1 - value);
     const f = n => {
-      const k = (n + h / 30) % 12,
-        color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+      const k = (n + hue / 30) % 12,
+        color = value - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        //convert to HEX and prefix "0" if needed
+        return Math.round(255 * color).toString(16).padStart(2, '0');   
     };
     return `#${f(0)}${f(8)}${f(4)}`;
 }
@@ -12,8 +27,8 @@ function createHeatmapData(choice = 'value', sliderValue = 0.5) {
     const arr = [];
 
     const createColor = {
-        'saturation': (x, y) => hslToHex(x, sliderValue, y),
-        'value': (x, y) => hslToHex(x, y, sliderValue)
+        'saturation': (x, y) => convertHSLtoHEX(x, sliderValue, y),
+        'value': (x, y) => convertHSLtoHEX(x, y, sliderValue)
     }
 
     for(let x = 0; x <= 360; x += 15) {
