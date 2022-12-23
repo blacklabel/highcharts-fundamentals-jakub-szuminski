@@ -1,44 +1,25 @@
 function hslToHex(h, s, l) {
     const a = s * Math.min(l, 1 - l);
-   
     const f = n => {
       const k = (n + h / 30) % 12,
         color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
       return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
     };
-
     return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-function createHeatmapData(choice) {
+function createHeatmapData(choice = 'none', sliderValue) {
     const arr = [];
 
-    if(choice === 'Saturation') {
-        for(let x = 0; x <= 360; x += 10) {
-            for(let y = 0; y <= 1; y += 0.025) {
-                arr.push({ 
-                    x, y, 
-                    color: hslToHex(x, saturation, y)
-                });
-            }
-        }
-    } else if (choice === 'Value') {
-        for(let x = 0; x <= 360; x += 10) {
-            for(let y = 0; y <= 1; y += 0.025) {
-                arr.push({ 
-                    x, y, 
-                    color: hslToHex(x, y, value)
-                });
-            }
-        }
-    } else {
-        for(let x = 0; x <= 360; x += 10) {
-            for(let y = 0; y <= 1; y += 0.025) {
-                arr.push({ 
-                    x, y, 
-                    color: hslToHex(x, y, 0.5)
-                });
-            }
+    const createColor = {
+        'none': (x, y) => hslToHex(x, y, 0.5),
+        'saturation': (x, y) => hslToHex(x, sliderValue, y),
+        'value': (x, y) => hslToHex(x, y, sliderValue)
+    }
+
+    for(let x = 0; x <= 360; x += 15) {
+        for(let y = 0; y <= 1; y += 0.0375) {
+            arr.push({ x, y, color: createColor[choice](x, y) })
         }
     }
 
@@ -48,19 +29,7 @@ function createHeatmapData(choice) {
 const chart = Highcharts.chart('container', {
     chart: {
         type: 'heatmap',
-        events: {
-            load() {
-                this.update({
-                    chart: {
-                        height: this.plotWidth
-                    }
-                });
-            }, 
-        }
-    },
-
-    boost: {
-        useGPUTranslations: true,
+        height: 400,
     },
     
     title: {
@@ -86,14 +55,13 @@ const chart = Highcharts.chart('container', {
 
     plotOptions: {
         heatmap: {
-            colsize: 10,
-            rowsize: 0.025,
+            colsize: 15,
+            rowsize: 0.0375,
             turboThreshold: 160000
         }
     },
 
     series: [{
-        boostTreshold: 1500,
         name: 'Colors',
         data: createHeatmapData()
     }]
@@ -106,20 +74,14 @@ form.addEventListener('change', () => {
     const choice = document.querySelector('input[name="property_choice"]:checked')?.value;
     if(!choice) return;
 
-    if(choice === 'Saturation') {
-        saturation = slider.value / 100;
-    } else if (choice === 'Value') {
-        value = slider.value / 100;
-    }
-
     chart.yAxis[0].update({
         title: {
-            text: choice === 'Value' ? 'S' : 'V'
+            text: choice === 'value' ? 'S' : 'V'
         }
     });
 
     chart.series[0].update({
-        data: createHeatmapData(choice)
+        data: createHeatmapData(choice, slider.value / 100)
     });
-})
+});
 
