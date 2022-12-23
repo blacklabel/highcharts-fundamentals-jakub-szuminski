@@ -7,11 +7,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/heatmap.js"></script>
 
 </head>
 
 <body>
   <div id="container"></div>
+
+  <form action="" id="form" style="padding: 10px; border: 1px solid black;">
+    <label for="slider" style="display: block; margin-bottom: 8px;">
+      Select which parameter should be controlled by the slider
+    </label>
+
+    <input type="range" id="slider" min="0" max="100" style="width: 40%" oninput="this.nextElementSibling.value = this.value">
+    <output>50</output>
+
+    <div>
+      <input type="radio" id="saturation" value="saturation" name="property_choice">
+      <label for="saturation">Saturation</label>
+    </div>
+
+    <div>
+      <input type="radio" id="value" value="value" name="property_choice">
+      <label for="value">Value</label>
+    </div>
+
+  </form>
 </body>
 
 <script src="main.js"></script>
