@@ -6,12 +6,46 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/stocktools/gui.css">
 
+  <script src="https://code.highcharts.com/stock/highstock.js"></script>
+  <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+  <script src="https://code.highcharts.com/modules/stock-tools.js"></script>
+  <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
+
+    <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+    <script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+    <script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+    <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+
+  <style>
+    #container {
+        display: flex;
+        gap: 50px;
+    }
+
+    #chart-one, #chart-two {
+        width: 50%;
+    }
+
+    @media screen and (max-width: 700px) {
+        #container {
+            flex-direction: column;
+        }
+
+        #chart-one, #chart-two {
+            width: 80%;
+            margin: 0 auto;
+        }
+    }
+  </style>
 </head>
 
 <body>
-  <div id="container"></div>
+    <div id="container">
+        <div id="chart-one"></div>
+        <div id="chart-two"></div>
+    </div>
 </body>
 
 <script src="main.js"></script>
