@@ -1,21 +1,24 @@
-const changeVisibility = (node, visible, first = false) => {
+//function which takes a node and shows/hides the node with its datalabel
+const changeNodeVisibility = (node, visible) => {
     const display = visible ? 'block' : 'none';
+    node.graphic.css({ display });
+    node.dataLabel.css({ display });
+}
+
+/*
+function which iterates through all neighbors of a node and 
+shows/hides the links and shows/hides the child nodes
+*/
+const changeNeighborsVisibility = (node, visible) => {    
+    changeNodeVisibility(node, visible);
     
-    //if it's not the node we clicked, but a child, make them appear/disappear
-    if(!first) {
-        node.graphic.css({ display });
-        node.dataLabel.css({ display });   
-    } 
+    //the node is already closed
+    if(node.hasOwnProperty('isOpen') && !node.isOpen) return;
 
-    //if the node isOpen === false (node's children are already invisible)
-    if(!first && node.hasOwnProperty('isOpen') && !node.isOpen) return;
-
-    node.isOpen = visible;
-
-    //iterating through node's children, hiding the connection & changing the visibility of the child
+    //iterating through neighbors
     node.linksFrom.forEach(link => {
-        link.graphic.css({ display });
-        changeVisibility(link.toNode, node.isOpen);
+        link.graphic.css({ display: visible ? 'block' : 'none' });
+        changeNeighborsVisibility(link.toNode, visible);
     });
 }
 
@@ -48,11 +51,13 @@ const chart = Highcharts.chart('container', {
                 click(e) {
                     const node = this;
 
-                    //changing its state (from open => closed or from closed => open)
                     node.isOpen = node.hasOwnProperty('isOpen') ? !node.isOpen : false;
 
-                    //starting the recursive algorithm that changes visibility
-                    changeVisibility(node, node.isOpen, true);
+                    //iterating through child nodes & running the recursive algorithm for them
+                    node.linksFrom.forEach(link => {
+                        link.graphic.css({ display: node.isOpen ? 'block' : 'none' });
+                        changeNeighborsVisibility(link.toNode, node.isOpen);
+                    });
                 }
             }
         },
