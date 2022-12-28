@@ -11,12 +11,11 @@
   <script src="https://code.highcharts.com/stock/highstock.js"></script>
   <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
   <script src="https://code.highcharts.com/modules/stock-tools.js"></script>
-  <script src="https://code.highcharts.com/stock/indicators/indicators-all.js"></script>
 
-    <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
-    <script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
-    <script src="https://code.highcharts.com/modules/price-indicator.js"></script>
-    <script src="https://code.highcharts.com/modules/full-screen.js"></script>
+  <script src="https://code.highcharts.com/stock/modules/drag-panes.js"></script>
+  <script src="https://code.highcharts.com/modules/annotations-advanced.js"></script>
+  <script src="https://code.highcharts.com/modules/price-indicator.js"></script>
+  <script src="https://code.highcharts.com/modules/full-screen.js"></script>
 
   <style>
     #container {
@@ -28,7 +27,7 @@
         width: 50%;
     }
 
-    @media screen and (max-width: 700px) {
+    @media screen and (max-width: 900px) {
         #container {
             flex-direction: column;
         }
@@ -38,14 +37,21 @@
             margin: 0 auto;
         }
     }
+
+    .live-data span {
+        background-image: url(radio.svg) !important;
+    }
   </style>
+
 </head>
 
 <body>
+
     <div id="container">
         <div id="chart-one"></div>
         <div id="chart-two"></div>
     </div>
+
 </body>
 
 <script src="main.js"></script>
