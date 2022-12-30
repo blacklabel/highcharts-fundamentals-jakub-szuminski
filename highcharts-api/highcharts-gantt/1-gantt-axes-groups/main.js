@@ -1,4 +1,14 @@
 Highcharts.ganttChart('container', {
+    xAxis: [{
+        dateTimeLabelFormats: {
+            week: '%A, %e %b, %Y',
+        },
+        tickInterval: 1000 * 60 * 60 * 24 * 15
+    }],
+    
+    yAxis: {
+        uniqueNames: true
+    },
 
     series: [{
         name: 'Project 1',
@@ -21,3 +31,4 @@ Highcharts.ganttChart('container', {
     }]
 
 });
+
