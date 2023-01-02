@@ -20,11 +20,8 @@ returns an interval object which adds a randomly-generated point to the chart
 
 */
 
-const defaultButtons = ['indicators', 'separator', 'simpleShapes', 'lines', 'crookedLines', 'measure', 'advanced', 'toggleAnnotations', 'separator', 'verticalLabels', 'flags', 'separator', 'zoomChange', 'fullScreen', 'typeChange', 'separator', 'currentPriceIndicator', 'saveChart'];
-
-const liveIntervals = [null, null];
-
-let endDates = [Date.UTC(2022, 4, 12)/1000, Date.UTC(2022, 4, 12)/1000];
+const defaultButtons = ['indicators', 'separator', 'simpleShapes', 'lines', 'crookedLines', 'measure', 'advanced', 'toggleAnnotations', 'separator', 'verticalLabels', 'flags', 'separator', 'zoomChange', 'fullScreen', 'typeChange', 'separator', 'currentPriceIndicator', 'saveChart'],
+    liveIntervals = [null, null];
 
 const liveDataButton = {
     className: 'live-data',
@@ -38,7 +35,7 @@ const liveDataButton = {
         } 
         //if was turned off, create an interval
         else {
-            liveIntervals[chart.index] = addPointsLive(chart.index);
+            liveIntervals[chart.index] = addPointsLive(chart);
         }
 
         chart.liveLabel.attr({
@@ -49,9 +46,8 @@ const liveDataButton = {
     },
 }
 
-function setDataGrouping(chartI, newGroupWidth) {
-    console.log(this);
-    Highcharts.charts[chartI].series[0].update({
+function setDataGrouping(chart, newGroupWidth) {
+    chart.series[0].update({
         dataGrouping: {
             groupPixelWidth: newGroupWidth
         }
@@ -61,7 +57,7 @@ function setDataGrouping(chartI, newGroupWidth) {
 function deselectButton(context, e) {
     context.selectedButton = null;
     context.selectedButtonElement = null;
-    e.classList.remove('highcharts-active');
+    e?.classList?.remove('highcharts-active');
 }
 
 function generateData() {
@@ -76,11 +72,11 @@ function generateData() {
     return data;
 }
 
-function addPointsLive(chartI) {
+function addPointsLive(chart) {
     return setInterval(() => {  
-        Highcharts.charts[chartI].endDate += 5000;
-        const newPoint = [endDates[chartI], Math.floor(Math.random() * 100)];
-        Highcharts.charts[chartI].series[0].addPoint(newPoint, true);
+        chart.endDate += 5000;
+        const newPoint = [chart.endDate, Math.floor(Math.random() * 100)];
+        chart.series[0].addPoint(newPoint, true);
     }, 1500);
 }
 
@@ -140,7 +136,7 @@ Highcharts.stockChart('chart-one', {
 
             definitions: {
                 liveData: {
-                    className: 'live-data',
+                    className: 'live-data',     
                 }
             }
         }
@@ -182,7 +178,6 @@ Highcharts.stockChart('chart-two', {
             definitions: {
                 liveData: {
                     className: 'live-data',
-                    symbol: ''
                 },
                 changeDataGrouping: {
                     items: ['groupingDense', 'groupingNormal', 'groupingWide'],
@@ -216,21 +211,21 @@ Highcharts.stockChart('chart-two', {
                 className: 'grouping-dense',
                 init(e) { 
                     deselectButton(this, e)
-                    setDataGrouping(1, 2);
+                    setDataGrouping(this.chart, 2);
                 }
             },
             groupingNormal: {
                 className: 'grouping-normal',
                 init(e) {
                     deselectButton(this, e);
-                    setDataGrouping(1, 5)
+                    setDataGrouping(this.chart, 5)
                 }
             },
             groupingWide: {
                 className: 'grouping-wide',
                 init(e) {
                     deselectButton(this, e);
-                    setDataGrouping(1,15);
+                    setDataGrouping(this.chart, 15);
                 }
             }
         }
