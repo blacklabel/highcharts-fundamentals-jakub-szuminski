@@ -73,7 +73,9 @@ Highcharts.chart('solar-container', {
     yAxis: {
         min: 0,
         max: 10,
-        title: '',       
+        title: {
+            text: ''
+        },       
     },
 
     xAxis: {
