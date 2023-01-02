@@ -33,9 +33,10 @@ Highcharts.chart('solar-container', {
         events: {
             load() {
                 const chart = this,
-                    timeInterval = 0.001;
-
-                const calculatePosition = (start, multiplier, func = Math.sin, angularFrequency = 10) => start + multiplier * func(angularFrequency * time);
+                    timeInterval = 0.001,
+                    calculatePosition = (start, multiplier, func = Math.sin, angularFrequency = 10) => (
+                        start + multiplier * func(angularFrequency * time)
+                    );
 
                 setInterval(() => {
                     chart.series[0].data[1].update({
@@ -72,7 +73,7 @@ Highcharts.chart('solar-container', {
     yAxis: {
         min: 0,
         max: 10,
-        title: null,       
+        title: '',       
     },
 
     xAxis: {
