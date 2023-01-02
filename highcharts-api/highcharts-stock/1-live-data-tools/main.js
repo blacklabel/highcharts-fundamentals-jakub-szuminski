@@ -1,20 +1,19 @@
 /*
 QUICK EXPLANATION:
 
-1. Two charts are created and added to the *charts* array.
-2. We add a custom property "index" to each chart which enables to write less code later
-3. Random data is generated & fills the 0-series in each chart
+1. We add a custom property "index" to each chart which enables to write less code later
+2. Random data is generated & fills the 0-series in each chart
 
-4. First chart has 2 indicators: LinearRegressionIntercept & DEMA which are linked to the 0-series
+3. First chart has 2 indicators: LinearRegressionIntercept & DEMA which are linked to the 0-series
 
-5. Both charts have liveDataButton which turnes live data mode on and off
+4. Both charts have liveDataButton which turnes live data mode on and off
 - liveIntervals[0] is the interval active on chart 0 (or null if live data is disabled)
 - liveIntervals[1] is the interval active on chart 1 (or null if live data is disabled)
 
-6. function addPointsLive simulates a request to the server each 1500 miliseconds and 
+5. function addPointsLive simulates a request to the server each 1500 miliseconds and 
 returns an interval object which adds a randomly-generated point to the chart
 
-7. Second chart has changeDataGrouping button which consists of 3 button items 
+6. Second chart has changeDataGrouping button which consists of 3 button items 
 - grouping-dense -> changes groupPixelWidth to small
 - group-normal -> changes groupPixelWidth to normal
 - group-wide -> changes groupPixelWidth to
@@ -23,9 +22,7 @@ returns an interval object which adds a randomly-generated point to the chart
 
 const defaultButtons = ['indicators', 'separator', 'simpleShapes', 'lines', 'crookedLines', 'measure', 'advanced', 'toggleAnnotations', 'separator', 'verticalLabels', 'flags', 'separator', 'zoomChange', 'fullScreen', 'typeChange', 'separator', 'currentPriceIndicator', 'saveChart'];
 
-const charts = [],
-    data = [generateData(), generateData()],
-    liveIntervals = [null, null];
+const liveIntervals = [null, null];
 
 let endDates = [Date.UTC(2022, 4, 12)/1000, Date.UTC(2022, 4, 12)/1000];
 
@@ -48,15 +45,13 @@ const liveDataButton = {
             text: `Live data: ${liveIntervals[chart.index] ? 'on' : 'off'}`
         });
 
-        //deselect the button
-        this.selectedButton = null;
-        this.selectedButtonElement = null;
-        e.classList.remove('highcharts-active');
+        deselectButton(this);
     },
 }
 
 function setDataGrouping(chartI, newGroupWidth) {
-    charts[chartI].series[0].update({
+    console.log(this);
+    Highcharts.charts[chartI].series[0].update({
         dataGrouping: {
             groupPixelWidth: newGroupWidth
         }
@@ -83,13 +78,13 @@ function generateData() {
 
 function addPointsLive(chartI) {
     return setInterval(() => {  
-        endDates[chartI] += 5000;
+        Highcharts.charts[chartI].endDate += 5000;
         const newPoint = [endDates[chartI], Math.floor(Math.random() * 100)];
-        charts[chartI].series[0].addPoint(newPoint, true);
+        Highcharts.charts[chartI].series[0].addPoint(newPoint, true);
     }, 1500);
 }
 
-charts.push(Highcharts.stockChart('chart-one', {
+Highcharts.stockChart('chart-one', {
     chart: {
         events: {
             load() {
@@ -101,6 +96,7 @@ charts.push(Highcharts.stockChart('chart-one', {
                     .add();
 
                 chart.index = 0;
+                chart.endDate = Date.UTC(2022, 4, 12) / 1000;
             }
         }
     },
@@ -118,7 +114,7 @@ charts.push(Highcharts.stockChart('chart-one', {
     series: [{
         name: 'AAPL',
         id: 'main',
-        data: data[0],
+        data: generateData(),
         dataGrouping: {
             groupPixelWidth: 15,
         }
@@ -155,9 +151,9 @@ charts.push(Highcharts.stockChart('chart-one', {
             liveData: liveDataButton
         }
     }
-}));
+});
 
-charts.push(Highcharts.stockChart('chart-two', {
+Highcharts.stockChart('chart-two', {
     chart: {
         events: {
             load() {
@@ -169,13 +165,14 @@ charts.push(Highcharts.stockChart('chart-two', {
                     .add();
 
                 chart.index = 1;
+                chart.endDate = Date.UTC(2022, 4, 12) / 1000;
             }
         }
     },
     
     series: [{
         name: 'AAPL',
-        data: data[1],
+        data: generateData(),
     }],
 
     stockTools: {
@@ -185,6 +182,7 @@ charts.push(Highcharts.stockChart('chart-two', {
             definitions: {
                 liveData: {
                     className: 'live-data',
+                    symbol: ''
                 },
                 changeDataGrouping: {
                     items: ['groupingDense', 'groupingNormal', 'groupingWide'],
@@ -237,5 +235,5 @@ charts.push(Highcharts.stockChart('chart-two', {
             }
         }
     }
-}));
+});
 
