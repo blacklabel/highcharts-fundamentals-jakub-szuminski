@@ -7,8 +7,7 @@ QUICK EXPLANATION:
 3. First chart has 2 indicators: LinearRegressionIntercept & DEMA which are linked to the 0-series
 
 4. Both charts have liveDataButton which turnes live data mode on and off
-- liveIntervals[0] is the interval active on chart 0 (or null if live data is disabled)
-- liveIntervals[1] is the interval active on chart 1 (or null if live data is disabled)
+- chart.liveInterval is the interval active on chart (or null if live data is disabled)
 
 5. function addPointsLive simulates a request to the server each 1500 miliseconds and 
 returns an interval object which adds a randomly-generated point to the chart
@@ -20,8 +19,7 @@ returns an interval object which adds a randomly-generated point to the chart
 
 */
 
-const defaultButtons = ['indicators', 'separator', 'simpleShapes', 'lines', 'crookedLines', 'measure', 'advanced', 'toggleAnnotations', 'separator', 'verticalLabels', 'flags', 'separator', 'zoomChange', 'fullScreen', 'typeChange', 'separator', 'currentPriceIndicator', 'saveChart'],
-    liveIntervals = [null, null];
+const defaultButtons = ['indicators', 'separator', 'simpleShapes', 'lines', 'crookedLines', 'measure', 'advanced', 'toggleAnnotations', 'separator', 'verticalLabels', 'flags', 'separator', 'zoomChange', 'fullScreen', 'typeChange', 'separator', 'currentPriceIndicator', 'saveChart'];
 
 const liveDataButton = {
     className: 'live-data',
@@ -29,20 +27,20 @@ const liveDataButton = {
         const chart = this.chart;
 
         //if "liveData" is turned on (there is an interval) then turn off (clearInterval)
-        if(liveIntervals[chart.index]) { 
-            clearInterval(liveIntervals[chart.index]);
-            liveIntervals[chart.index] = null;
+        if(chart.liveInterval) { 
+            clearInterval(chart.liveInterval);
+            chart.liveInterval = null;
         } 
         //if was turned off, create an interval
         else {
-            liveIntervals[chart.index] = addPointsLive(chart);
+            chart.liveInterval = addPointsLive(chart);
         }
 
         chart.liveLabel.attr({
-            text: `Live data: ${liveIntervals[chart.index] ? 'on' : 'off'}`
+            text: `Live data: ${chart.liveInterval ? 'on' : 'off'}`
         });
 
-        deselectButton(this);
+        deselectButton(this, e);
     },
 }
 
@@ -57,19 +55,18 @@ function setDataGrouping(chart, newGroupWidth) {
 function deselectButton(context, e) {
     context.selectedButton = null;
     context.selectedButtonElement = null;
-    e?.classList?.remove('highcharts-active');
+    if(e.classList) e.classList.remove('highcharts-active');
 }
 
 function generateData() {
     const startDate = Date.UTC(2021, 4, 15) / 1000,
         endDate = Date.UTC(2022, 4, 12) / 1000,
-        data = [];
-
-    for(let i = startDate; i < endDate; i += 50000) {
-        data.push([i, Math.floor(Math.random() * 100)]);
-    }
-
-    return data;
+        stepSize = 50000;
+        
+    return Array.from({ length: (endDate - startDate) / stepSize + 1}, 
+    (_, i) => (
+        [startDate + i * stepSize, Math.floor(Math.random() * 100)]
+    ));
 }
 
 function addPointsLive(chart) {
@@ -93,6 +90,7 @@ Highcharts.stockChart('chart-one', {
 
                 chart.index = 0;
                 chart.endDate = Date.UTC(2022, 4, 12) / 1000;
+                chart.liveInterval = null;
             }
         }
     },
@@ -162,6 +160,7 @@ Highcharts.stockChart('chart-two', {
 
                 chart.index = 1;
                 chart.endDate = Date.UTC(2022, 4, 12) / 1000;
+                chart.liveInterval = null;
             }
         }
     },
